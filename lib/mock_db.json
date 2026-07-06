@@ -1,0 +1,192 @@
+{
+  "inventory": [
+    [
+      "Item name",
+      "Quantity",
+      "Units",
+      "Cost price",
+      "Selling price",
+      "Expiry date"
+    ],
+    [
+      "Organic Honey",
+      "60",
+      "jars",
+      "6.50",
+      "12.00",
+      "2026-10-04"
+    ],
+    [
+      "Almond Milk 1L",
+      "8",
+      "cartons",
+      "1.80",
+      "3.50",
+      "2026-07-10"
+    ],
+    [
+      "Whole Wheat Bread",
+      "15",
+      "loaves",
+      "1.20",
+      "2.50",
+      "2026-07-20"
+    ],
+    [
+      "Greek Yogurt 500g",
+      "25",
+      "tubs",
+      "2.20",
+      "4.80",
+      "2026-07-08"
+    ],
+    [
+      "Extra Virgin Olive Oil",
+      "50",
+      "bottles",
+      "8.00",
+      "16.99",
+      ""
+    ],
+    [
+      "Premium Dark Chocolate",
+      "5",
+      "bars",
+      "1.50",
+      "3.20",
+      "2026-08-03"
+    ],
+    [
+      "Quinoa 1kg",
+      "30",
+      "bags",
+      "3.00",
+      "6.50",
+      ""
+    ],
+    [
+      "Avocado Oil 500ml",
+      "12",
+      "bottles",
+      "5.50",
+      "11.50",
+      "2026-11-03"
+    ],
+    [
+      "Gluten-Free Oats 1kg",
+      "3",
+      "bags",
+      "2.50",
+      "5.00",
+      "2026-07-21"
+    ],
+    [
+      "Matcha Green Tea Powder",
+      "18",
+      "tins",
+      "12.00",
+      "24.50",
+      "2026-08-20"
+    ]
+  ],
+  "sales": [
+    [
+      "Item name",
+      "Quantity",
+      "Units",
+      "Total price",
+      "Date"
+    ],
+    [
+      "Organic Honey",
+      "2",
+      "jars",
+      "24.00",
+      "2026-07-06"
+    ],
+    [
+      "Almond Milk 1L",
+      "4",
+      "cartons",
+      "14.00",
+      "2026-07-06"
+    ],
+    [
+      "Whole Wheat Bread",
+      "5",
+      "loaves",
+      "12.50",
+      "2026-07-05"
+    ],
+    [
+      "Greek Yogurt 500g",
+      "10",
+      "tubs",
+      "48.00",
+      "2026-07-05"
+    ],
+    [
+      "Organic Honey",
+      "1",
+      "jars",
+      "12.00",
+      "2026-07-04"
+    ],
+    [
+      "Extra Virgin Olive Oil",
+      "2",
+      "bottles",
+      "33.98",
+      "2026-07-04"
+    ],
+    [
+      "Premium Dark Chocolate",
+      "10",
+      "bars",
+      "32.00",
+      "2026-07-03"
+    ],
+    [
+      "Almond Milk 1L",
+      "3",
+      "cartons",
+      "10.50",
+      "2026-07-02"
+    ],
+    [
+      "Greek Yogurt 500g",
+      "5",
+      "tubs",
+      "24.00",
+      "2026-07-02"
+    ],
+    [
+      "Quinoa 1kg",
+      "4",
+      "bags",
+      "26.00",
+      "2026-07-01"
+    ],
+    [
+      "Organic Honey",
+      "3",
+      "jars",
+      "36.00",
+      "2026-06-30"
+    ],
+    [
+      "Extra Virgin Olive Oil",
+      "1",
+      "bottles",
+      "16.99",
+      "2026-06-30"
+    ],
+    [
+      "Premium Dark Chocolate",
+      "2",
+      "bars",
+      "6.40",
+      "2026-06-30"
+    ]
+  ]
+}
