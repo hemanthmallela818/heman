@@ -12,7 +12,8 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  IndianRupee
+  IndianRupee,
+  Plus
 } from 'lucide-react';
 
 import { useData } from '../context';
@@ -29,7 +30,8 @@ export default function DataManager() {
     toasts,
     removeToast,
     handleSaveToSheets,
-    handleDiscardAllChanges
+    handleDiscardAllChanges,
+    handleAddRow
   } = useData();
 
   // Tab and filtering states
@@ -49,6 +51,139 @@ export default function DataManager() {
   const [editingCell, setEditingCell] = useState(null); // { tab, row, colName }
   const [editValue, setEditValue] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(null); // null or { targetCell }
+
+  // Add item modal states
+  const [showAddModal, setShowAddModal] = useState(null); // null, 'inventory', 'sales'
+  const [formData, setFormData] = useState({});
+  const [showConfirmAdd, setShowConfirmAdd] = useState(null); // null or { tab, rowData }
+
+  const handleOpenAddInventory = () => {
+    setFormData({
+      name: '',
+      quantity: '',
+      units: 'units',
+      costPrice: '',
+      sellingPrice: '',
+      expiryDate: ''
+    });
+    setShowAddModal('inventory');
+  };
+
+  const handleOpenAddSales = () => {
+    setFormData({
+      productSelect: '',
+      name: '',
+      quantity: '1',
+      units: 'units',
+      totalPrice: '',
+      date: new Date().toISOString().split('T')[0]
+    });
+    setShowAddModal('sales');
+  };
+
+  const handleProductSelectChange = (e) => {
+    const val = e.target.value;
+    if (val === 'custom') {
+      setFormData(prev => ({
+        ...prev,
+        productSelect: 'custom',
+        name: '',
+        units: 'units',
+        totalPrice: ''
+      }));
+    } else if (val) {
+      const product = data.inventory.find(i => i.name.toLowerCase() === val.toLowerCase());
+      if (product) {
+        const qty = parseFloat(formData.quantity || 1);
+        const autoTotal = (qty * product.sellingPrice).toFixed(2);
+        setFormData(prev => ({
+          ...prev,
+          productSelect: val,
+          name: product.name,
+          units: product.units,
+          totalPrice: autoTotal
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        productSelect: '',
+        name: '',
+        units: 'units',
+        totalPrice: ''
+      }));
+    }
+  };
+
+  const handleSalesQuantityChange = (e) => {
+    const qtyVal = e.target.value;
+    const qty = parseFloat(qtyVal || 0);
+    
+    setFormData(prev => {
+      let updatedTotal = prev.totalPrice;
+      if (prev.productSelect && prev.productSelect !== 'custom') {
+        const product = data.inventory.find(i => i.name.toLowerCase() === prev.productSelect.toLowerCase());
+        if (product) {
+          updatedTotal = (qty * product.sellingPrice).toFixed(2);
+        }
+      }
+      return {
+        ...prev,
+        quantity: qtyVal,
+        totalPrice: updatedTotal
+      };
+    });
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (showAddModal === 'inventory') {
+      if (!formData.name.trim()) return alert("Item Name is required");
+      if (formData.quantity === '' || isNaN(formData.quantity)) return alert("Quantity is required");
+      if (!formData.units.trim()) return alert("Units is required");
+      if (formData.costPrice === '' || isNaN(formData.costPrice)) return alert("Cost Price is required");
+      if (formData.sellingPrice === '' || isNaN(formData.sellingPrice)) return alert("Selling Price is required");
+      
+      const rowData = {
+        "Item name": formData.name.trim(),
+        "Quantity": formData.quantity,
+        "Units": formData.units.trim(),
+        "Cost price": formData.costPrice,
+        "Selling price": formData.sellingPrice,
+        "Expiry date": formData.expiryDate || ''
+      };
+      
+      setShowConfirmAdd({ tab: 'Inventory', rowData });
+    } else if (showAddModal === 'sales') {
+      const finalName = formData.productSelect === 'custom' ? formData.name.trim() : formData.name;
+      if (!finalName || !finalName.trim()) return alert("Item Name is required");
+      if (formData.quantity === '' || isNaN(formData.quantity)) return alert("Quantity is required");
+      if (!formData.units.trim()) return alert("Units is required");
+      if (formData.totalPrice === '' || isNaN(formData.totalPrice)) return alert("Total price is required");
+      if (!formData.date) return alert("Date is required");
+      
+      const rowData = {
+        "Item name": finalName.trim(),
+        "Quantity": formData.quantity,
+        "Units": formData.units.trim(),
+        "Total price": formData.totalPrice,
+        "Date": formData.date
+      };
+      
+      setShowConfirmAdd({ tab: 'Sales', rowData });
+    }
+  };
+
+  const handleConfirmAddAction = async () => {
+    if (!showConfirmAdd) return;
+    const { tab, rowData } = showConfirmAdd;
+    
+    const result = await handleAddRow(tab, rowData);
+    if (result.success) {
+      setShowConfirmAdd(null);
+      setShowAddModal(null);
+    }
+  };
 
   // Check if there are unsaved edits in other rows or tabs
   const checkHasPendingChangesInDifferentRow = (tab, row) => {
@@ -354,6 +489,13 @@ export default function DataManager() {
                 <option value="expired-soon-30">🟡 Expiring Soon (&lt;30 days)</option>
                 <option value="non-perishable">🟢 Non-Perishables</option>
               </select>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleOpenAddInventory}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.85rem' }}
+              >
+                <Plus size={14} /> Add Item
+              </button>
             </div>
           ) : (
             <div className="table-controls">
@@ -397,6 +539,13 @@ export default function DataManager() {
                   title="End date filter"
                 />
               </div>
+              <button 
+                className="btn btn-primary" 
+                onClick={handleOpenAddSales}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.85rem' }}
+              >
+                <Plus size={14} /> Add Transaction
+              </button>
             </div>
           )}
         </div>
@@ -753,6 +902,233 @@ export default function DataManager() {
           </div>
         </div>
       )}
+
+      {/* Manual Entry Modals */}
+      {showAddModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '500px' }}>
+            <div className="modal-header">
+              <h3>
+                <Plus size={20} color="var(--emerald)" />
+                {showAddModal === 'inventory' ? 'Add Inventory Product' : 'Log Sales Transaction'}
+              </h3>
+            </div>
+            <form onSubmit={handleFormSubmit}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {showAddModal === 'inventory' ? (
+                  <>
+                    <div className="form-group">
+                      <label htmlFor="inv-name">Item Name</label>
+                      <input 
+                        id="inv-name"
+                        type="text" 
+                        className="form-input" 
+                        required 
+                        placeholder="e.g. Fresh Mangoes"
+                        value={formData.name || ''} 
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      />
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="inv-quantity">Quantity</label>
+                        <input 
+                          id="inv-quantity"
+                          type="number" 
+                          className="form-input" 
+                          required 
+                          placeholder="e.g. 50"
+                          value={formData.quantity || ''} 
+                          onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inv-units">Units</label>
+                        <input 
+                          id="inv-units"
+                          type="text" 
+                          className="form-input" 
+                          required 
+                          placeholder="e.g. kg, boxes, tins"
+                          value={formData.units || ''} 
+                          onChange={(e) => setFormData({...formData, units: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="inv-cost">Cost Price (₹)</label>
+                        <input 
+                          id="inv-cost"
+                          type="number" 
+                          step="0.01" 
+                          className="form-input" 
+                          required 
+                          placeholder="0.00"
+                          value={formData.costPrice || ''} 
+                          onChange={(e) => setFormData({...formData, costPrice: e.target.value})}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="inv-selling">Selling Price (₹)</label>
+                        <input 
+                          id="inv-selling"
+                          type="number" 
+                          step="0.01" 
+                          className="form-input" 
+                          required 
+                          placeholder="0.00"
+                          value={formData.sellingPrice || ''} 
+                          onChange={(e) => setFormData({...formData, sellingPrice: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="inv-expiry">Expiry Date (Optional)</label>
+                      <input 
+                        id="inv-expiry"
+                        type="date" 
+                        className="form-input" 
+                        value={formData.expiryDate || ''} 
+                        onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="form-group">
+                      <label htmlFor="sales-product">Select Product</label>
+                      <select 
+                        id="sales-product"
+                        className="form-input" 
+                        style={{ appearance: 'auto' }}
+                        value={formData.productSelect || ''}
+                        onChange={handleProductSelectChange}
+                        required
+                      >
+                        <option value="">-- Choose Inventoried Item --</option>
+                        {getUniqueItemNames().map(name => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                        <option value="custom">-- Type Custom Item Name --</option>
+                      </select>
+                    </div>
+                    
+                    {formData.productSelect === 'custom' && (
+                      <div className="form-group">
+                        <label htmlFor="sales-custom-name">Custom Product Name</label>
+                        <input 
+                          id="sales-custom-name"
+                          type="text" 
+                          className="form-input" 
+                          required 
+                          placeholder="Enter custom product name"
+                          value={formData.name || ''} 
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        />
+                      </div>
+                    )}
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="sales-quantity">Quantity Sold</label>
+                        <input 
+                          id="sales-quantity"
+                          type="number" 
+                          className="form-input" 
+                          required 
+                          value={formData.quantity || ''} 
+                          onChange={handleSalesQuantityChange}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="sales-units">Units</label>
+                        <input 
+                          id="sales-units"
+                          type="text" 
+                          className="form-input" 
+                          required 
+                          value={formData.units || ''} 
+                          onChange={(e) => setFormData({...formData, units: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label htmlFor="sales-total">Total Price (₹)</label>
+                        <input 
+                          id="sales-total"
+                          type="number" 
+                          step="0.01" 
+                          className="form-input" 
+                          required 
+                          placeholder="0.00"
+                          value={formData.totalPrice || ''} 
+                          onChange={(e) => setFormData({...formData, totalPrice: e.target.value})}
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="sales-date">Transaction Date</label>
+                        <input 
+                          id="sales-date"
+                          type="date" 
+                          className="form-input" 
+                          required 
+                          value={formData.date || ''} 
+                          onChange={(e) => setFormData({...formData, date: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div className="modal-footer" style={{ marginTop: '1rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(null)}>Cancel</button>
+                <button type="submit" className="btn btn-primary">
+                  {showAddModal === 'inventory' ? 'Add Product' : 'Log Transaction'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Add Modal */}
+      {showConfirmAdd && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '420px' }}>
+            <div className="modal-header">
+              <h3>
+                <AlertTriangle color="var(--amber)" size={20} />
+                Confirm Record Addition
+              </h3>
+            </div>
+            <div className="modal-body">
+              <p style={{ marginBottom: '1rem' }}>Are you sure you want to add the following record to the **{showConfirmAdd.tab}** tab?</p>
+              
+              <div className="preview-grid">
+                {Object.entries(showConfirmAdd.rowData).map(([key, val]) => (
+                  <React.Fragment key={key}>
+                    <div className="preview-label">{key}:</div>
+                    <div className="preview-value">{val || '—'}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+              
+              <p style={{ marginTop: '1rem', fontStyle: 'italic', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                This record will be saved directly to the database.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowConfirmAdd(null)}>Go Back</button>
+              <button className="btn btn-primary" onClick={handleConfirmAddAction} disabled={isSyncing}>
+                {isSyncing ? 'Syncing...' : 'Confirm & Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <footer style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
         <p>Smart Store Database Management &bull; Live Google Sheets Integration</p>

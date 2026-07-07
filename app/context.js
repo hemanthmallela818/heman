@@ -147,6 +147,32 @@ export function DataProvider({ children }) {
     addToast("All unsaved changes discarded", "success");
   };
 
+  const handleAddRow = async (tab, rowData) => {
+    try {
+      setIsSyncing(true);
+      const response = await fetch('/api/add-row', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tab, rowData })
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        addToast(`Successfully added item to ${tab}`, "success");
+        await fetchData(true);
+        return { success: true };
+      } else {
+        addToast(result.error || "Failed to add item", "error");
+        return { success: false, error: result.error };
+      }
+    } catch (err) {
+      addToast("Network failure adding item", "error");
+      return { success: false, error: "Network failure" };
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   return (
     <DataContext.Provider value={{
       data,
@@ -164,7 +190,8 @@ export function DataProvider({ children }) {
       removeToast,
       fetchData,
       handleSaveToSheets,
-      handleDiscardAllChanges
+      handleDiscardAllChanges,
+      handleAddRow
     }}>
       {children}
     </DataContext.Provider>
