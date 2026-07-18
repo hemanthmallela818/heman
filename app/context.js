@@ -8,6 +8,7 @@ export function DataProvider({ children }) {
   const [data, setData] = useState({
     inventory: [],
     sales: [],
+    credits: [],
     kpis: {
       totalStockValue: 0,
       totalPotentialRevenue: 0,
@@ -15,7 +16,9 @@ export function DataProvider({ children }) {
       lowStockCount: 0,
       averageProfitMargin: 0,
       todaysRevenue: 0,
-      todaysProfit: 0
+      todaysProfit: 0,
+      totalCreditsAmount: 0,
+      totalCreditsCustomers: 0
     },
     revenueTrend: [],
     bestSellers: []
@@ -108,8 +111,14 @@ export function DataProvider({ children }) {
     const updates = [];
     Object.entries(pendingChanges).forEach(([tabName, tabEdits]) => {
       Object.values(tabEdits).forEach(edit => {
+        let targetTabName = 'Inventory';
+        if (tabName === 'Sales') {
+          targetTabName = 'Sales / Transactions';
+        } else if (tabName === 'Credits') {
+          targetTabName = 'Credits log page';
+        }
         updates.push({
-          tab: tabName === 'Inventory' ? 'Inventory' : 'Sales / Transactions',
+          tab: targetTabName,
           row: edit.row,
           colName: edit.colName,
           value: edit.value

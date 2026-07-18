@@ -7,6 +7,7 @@ import {
   LayoutDashboard, 
   Database, 
   CreditCard,
+  Coins,
   LogOut,
   RefreshCw
 } from 'lucide-react';
@@ -69,6 +70,12 @@ export default function Header() {
           <Link href="/data?tab=sales">
             <CreditCard size={18} />
             <span>Transactions</span>
+          </Link>
+        </li>
+        <li className={`sidebar-item ${pathname === '/credits' ? 'active' : ''}`}>
+          <Link href="/credits">
+            <Coins size={18} />
+            <span>Credits</span>
           </Link>
         </li>
       </ul>

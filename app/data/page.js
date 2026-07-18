@@ -524,7 +524,6 @@ function DataManager() {
                 <button 
                   className="btn btn-primary" 
                   onClick={handleOpenAddInventory}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.85rem' }}
                 >
                   <Plus size={14} /> Add Item
                 </button>
@@ -574,7 +573,6 @@ function DataManager() {
                 <button 
                   className="btn btn-primary" 
                   onClick={handleOpenAddSales}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.85rem' }}
                 >
                   <Plus size={14} /> Add Transaction
                 </button>

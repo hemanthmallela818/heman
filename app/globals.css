@@ -651,6 +651,104 @@ body {
   gap: 1rem;
 }
 
+/* Table Controls & Filter Bars */
+.table-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 240px;
+}
+
+.search-input-wrapper .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.55rem 0.85rem 0.55rem 2.25rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  transition: var(--transition-smooth);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--teal-accent);
+  box-shadow: 0 0 0 3px rgba(13, 98, 102, 0.08);
+}
+
+.filter-select {
+  padding: 0.55rem 2.25rem 0.55rem 0.85rem;
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  appearance: none; /* remove default arrow */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23486366' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--teal-accent);
+  box-shadow: 0 0 0 3px rgba(13, 98, 102, 0.08);
+}
+
+.filter-select:hover {
+  border-color: var(--border-hover);
+}
+
+.date-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.date-picker-group span {
+  color: var(--text-muted);
+}
+
+.date-input {
+  border: none;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 .tab-trigger {
   background: transparent;
   border: none;
@@ -766,20 +864,31 @@ body {
   font-family: var(--font-family);
   font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.6rem 1.25rem;
+  padding: 0.55rem 1.15rem;
   border-radius: 10px;
   border: none;
   cursor: pointer;
   transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
   background: var(--teal-accent);
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(13, 98, 102, 0.08);
 }
 
 .btn-primary:hover {
   background: #084c4f;
+  box-shadow: 0 4px 12px rgba(13, 98, 102, 0.16);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
@@ -791,6 +900,8 @@ body {
 .btn-secondary:hover {
   background: #fafcfa;
   color: var(--text-primary);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
 }
 
 /* Mic pulse animations */

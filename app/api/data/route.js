@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const data = await fetchSheetData();
-    const processed = processStoreData(data.inventory, data.sales);
+    const processed = processStoreData(data.inventory, data.sales, data.credits);
     
     return NextResponse.json({
       success: true,
